@@ -1,0 +1,4 @@
+load STM32L476VGTx 
+project name STCubeGenerated 
+project toolchain "Makefile" 
+project path "F:\work\software\STM32L476_Discovery\RTE\Device\STM32L476VGTx\" 

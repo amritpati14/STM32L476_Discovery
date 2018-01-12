@@ -116,9 +116,9 @@ uint8_t LSM303C_ACCELERO_ReadID(void)
 {
 	uint8_t tmp = 0x00;
 	   	
-	ACCELERO_IO_Write(ACCEL_CTRL_REG4_A, 0x07);
+	ACCELERO_IO_Write(LSM303C_CTRL_REG4_A, 0x07);
 	/* Read value at Who am I register address */
-	tmp = ACCELERO_IO_Read(ACCEL_WHO_AM_I_ADDR);  
+	tmp = ACCELERO_IO_Read(LSM303C_WHO_AM_I_ADDR);  
 	
 	return (uint8_t)tmp;
 }
@@ -127,9 +127,9 @@ uint8_t LSM303C_MAGNETIC_ReadID(void)
 {
 	uint8_t tmp = 0x00;
 	   	
-	MAGNETIC_IO_Write(MAGNE_CTRL_REG3_M, 0x84);
+	MAGNETIC_IO_Write(LSM303C_CTRL_REG3_M, 0x84);
 	/* Read value at Who am I register address */
-	tmp = MAGNETIC_IO_Read(MAGNE_WHO_AM_I_ADDR);  
+	tmp = MAGNETIC_IO_Read(LSM303C_WHO_AM_I_ADDR);  
 	
 	return (uint8_t)tmp;
 }

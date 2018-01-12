@@ -74,7 +74,7 @@ static void GPIO_Uart_Init(void)
 	
 	/* UART  TX&RX GPIO pin configuration  */
 	GPIO_InitStruct.Mode      = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull      = GPIO_PULLUP;
+	GPIO_InitStruct.Pull      = GPIO_NOPULL;
 	GPIO_InitStruct.Speed     = GPIO_SPEED_FREQ_HIGH;
 	
 	GPIO_InitStruct.Pin       = USARTx_TX_PIN;	
@@ -129,8 +129,8 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	/* Set transmission flag: trasfer complete*/
 	
-//	HAL_UART_Transmit(&T_UartHandle,aRxBuffer,1,0); 
-//	HAL_UART_Receive_IT(&T_UartHandle,aRxBuffer,1); 
+	HAL_UART_Transmit(&T_UartHandle,aRxBuffer,1,0xffff); 
+	HAL_UART_Receive_IT(&T_UartHandle,aRxBuffer,1); 
 	
 }
 

@@ -49,7 +49,7 @@ int main(void)
 	
 	printf("ACCELER_ID is 0x%x!\n",ACCELER_ID);	    /* 0x41 */	
 	
-	
+
 	MAGNETIC_ID = LSM303C_MAGNETIC_ReadID();
 	
 	printf("MAGNETIC_ID is 0x%x!\n",MAGNETIC_ID);	/* 0x3D */		

@@ -16,7 +16,7 @@ uint8_t aTxBuffer[BUFFER_SIZE] = "Healson uart transmit data test!";
 /* Buffer used for reception */
 uint8_t aRxBuffer[BUFFER_SIZE] = {0x00};
 
-uint8_t GYRO_ID;
+uint8_t GYRO_ID,ACCELER_ID,MAGNETIC_ID;
 
 int main(void)
 {
@@ -34,14 +34,28 @@ int main(void)
 	
 	/* GYRO initialization */	
 	BSP_GYRO_Init();
+	
+	/* ACCELER initialization */		
+	BSP_ACCELER_Init();
 				
 	printf("stm32 is start!\n");
 	
 	GYRO_ID = L3GD20_ReadID();
 
-	printf("GYRO_ID is 0x%x!\n",GYRO_ID);
+	printf("GYRO_ID is 0x%x!\n",GYRO_ID);           /* 0xD4 */
 	
-	while (1)
+	
+	ACCELER_ID = LSM303C_ACCELERO_ReadID();
+	
+	printf("ACCELER_ID is 0x%x!\n",ACCELER_ID);	    /* 0x41 */	
+	
+	
+	MAGNETIC_ID = LSM303C_MAGNETIC_ReadID();
+	
+	printf("MAGNETIC_ID is 0x%x!\n",MAGNETIC_ID);	/* 0x3D */		
+	
+	
+	while(1)
 	{			
 		LED_GREEN_Toggle() ;
 		/* Insert delay 1000 ms */

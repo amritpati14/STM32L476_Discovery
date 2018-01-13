@@ -35,7 +35,7 @@ void BSP_ACCELER_Init(void)
 	ACCEL_SpiHandle.Init.CLKPolarity       = SPI_POLARITY_LOW;
 	ACCEL_SpiHandle.Init.CLKPhase          = SPI_PHASE_1EDGE;
 	ACCEL_SpiHandle.Init.NSS               = SPI_NSS_SOFT;
-	ACCEL_SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
+	ACCEL_SpiHandle.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16; /* MAX 10MHz */
 	ACCEL_SpiHandle.Init.FirstBit          = SPI_FIRSTBIT_MSB;
 	ACCEL_SpiHandle.Init.TIMode            = SPI_TIMODE_DISABLE;
 	ACCEL_SpiHandle.Init.CRCCalculation    = SPI_CRCCALCULATION_DISABLE;

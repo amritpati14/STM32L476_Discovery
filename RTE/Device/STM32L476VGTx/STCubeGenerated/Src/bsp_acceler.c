@@ -123,6 +123,98 @@ uint8_t LSM303C_ACCELERO_ReadID(void)
 	return (uint8_t)tmp;
 }
 
+
+
+
+/**
+  * @brief  Set LSM303C Accelerometer Initialization.
+  * @param  InitStruct: Init parameters
+  * @retval None
+  */
+void LSM303C_AccInit(uint16_t InitStruct)
+{  
+	uint8_t ctrl = 0x00;
+	  
+	/* Write value to ACC MEMS CTRL_REG1 register */
+	ctrl = (uint8_t) InitStruct;
+	ACCELERO_IO_Write(LSM303C_CTRL_REG1_A, ctrl);
+	  
+	/* Write value to ACC MEMS CTRL_REG4 register */
+	ctrl = ((uint8_t) (InitStruct >> 8));
+	ACCELERO_IO_Write(LSM303C_CTRL_REG4_A, ctrl);
+}
+
+
+/**
+  * @brief  Read X, Y & Z Acceleration values 
+  * @param  pData: Data out pointer
+  * @retval None
+  */
+void LSM303C_ACCELERO_ReadXYZ(int16_t* pData)
+{
+	int16_t pnRawData[3];
+	uint8_t ctrlx[2]={0,0};
+	uint8_t buffer[6];
+	uint8_t i = 0;
+	uint8_t sensitivity = LSM303C_ACC_SENSITIVITY_2G;
+	  
+	/* Read the acceleration control register content */
+	ctrlx[0] = ACCELERO_IO_Read(LSM303C_CTRL_REG4_A);
+	ctrlx[1] = ACCELERO_IO_Read(LSM303C_CTRL_REG5_A);
+	  
+	/* Read output register X, Y & Z acceleration */
+	buffer[0] = ACCELERO_IO_Read(LSM303C_OUT_X_L_A); 
+	buffer[1] = ACCELERO_IO_Read(LSM303C_OUT_X_H_A);
+	buffer[2] = ACCELERO_IO_Read(LSM303C_OUT_Y_L_A);
+	buffer[3] = ACCELERO_IO_Read(LSM303C_OUT_Y_H_A);
+	buffer[4] = ACCELERO_IO_Read(LSM303C_OUT_Z_L_A);
+	buffer[5] = ACCELERO_IO_Read(LSM303C_OUT_Z_H_A);
+	  
+	for(i=0; i<3; i++)
+	{
+		pnRawData[i]=((int16_t)((uint16_t)buffer[2*i+1] << 8) + buffer[2*i]);
+	}
+	  
+	/* Normal mode */
+	/* Switch the sensitivity value set in the CRTL4 */
+	switch(ctrlx[0] & LSM303C_ACC_FULLSCALE_8G)
+	{
+		case LSM303C_ACC_FULLSCALE_2G:
+			sensitivity = LSM303C_ACC_SENSITIVITY_2G;
+		break;
+		
+		case LSM303C_ACC_FULLSCALE_4G:
+			sensitivity = LSM303C_ACC_SENSITIVITY_4G;
+		break;
+		
+		case LSM303C_ACC_FULLSCALE_8G:
+			sensitivity = LSM303C_ACC_SENSITIVITY_8G;
+		break;
+	}
+	  
+	/* Obtain the ACC value for the three axis */
+	for(i=0; i<3; i++)
+	{
+		pData[i]=(pnRawData[i] * sensitivity);
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 uint8_t LSM303C_MAGNETIC_ReadID(void)
 {
 	uint8_t tmp = 0x00;

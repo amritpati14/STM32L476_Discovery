@@ -33,7 +33,7 @@
 	 
 //#include "bsp_button.h"	  
 //#include "bsp_iwdg.h"
-//#include "bsp_timer.h"
+#include "bsp_timer.h"
 //#include "bsp_oled.h"
 //#include "bsp_fir.h"
 
@@ -44,8 +44,12 @@
 #define BUFFER_SIZE					0x100
 
 /*************************************FUNCTION***********************************/		 
+		
+extern TIM_HandleTypeDef TIM3_Handler;
 	
 extern UART_HandleTypeDef T_UartHandle;
+
+extern DMA_HandleTypeDef DMA_TIM_IC;	
 
 void Error_Handler (void);
 

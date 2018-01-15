@@ -199,10 +199,21 @@ void USART1_IRQHandler(void)
 
 
 
+void TIM3_IRQHandler(void)
+{
+
+	HAL_TIM_IRQHandler(&TIM3_Handler);
+
+}
 
 
 
-
+void DMA1_Channel6_IRQHandler(void)
+{
+	
+	HAL_DMA_IRQHandler(&DMA_TIM_IC);
+	
+}
 
 
 

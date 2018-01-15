@@ -115,8 +115,12 @@
 #define LSM303C_ACC_HR_ENABLE               ((uint8_t)0x80)
 #define LSM303C_ACC_HR_DISABLE              ((uint8_t)0x00)
 
-
 /* Acc_Full_Scale_Selection */
+#define LSM303C_ACC_FULLSCALE_2G            ((uint8_t)0x00)  /* 2g */
+#define LSM303C_ACC_FULLSCALE_4G            ((uint8_t)0x20)  /* 4g */
+#define LSM303C_ACC_FULLSCALE_8G            ((uint8_t)0x30)  /* 8g */
+
+/* accelerometer sensitivity */
 #define LSM303C_ACC_SENSITIVITY_2G     ((uint8_t)1)  /*!< accelerometer sensitivity with 2 g full scale [mg/LSB] */
 #define LSM303C_ACC_SENSITIVITY_4G     ((uint8_t)2)  /*!< accelerometer sensitivity with 4 g full scale [mg/LSB] */
 #define LSM303C_ACC_SENSITIVITY_8G     ((uint8_t)4)  /*!< accelerometer sensitivity with 8 g full scale [mg/LSB] */
@@ -317,6 +321,13 @@ uint8_t ACCELERO_IO_Read(uint8_t RegisterAddr);
 void ACCELERO_IO_Write(uint8_t RegisterAddr, uint8_t Value);											 
 
 uint8_t LSM303C_ACCELERO_ReadID(void); 
+
+void LSM303C_AccInit(uint16_t InitStruct);											 
+											 
+void LSM303C_ACCELERO_ReadXYZ(int16_t* pData);
+
+
+
 											 
 											 
 uint8_t MAGNETIC_IO_Read(uint8_t RegisterAddr);

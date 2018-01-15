@@ -404,6 +404,11 @@
               <FileType>1</FileType>
               <FilePath>.\RTE\Device\STM32L476VGTx\STCubeGenerated\Src\bsp_gyro.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\RTE\Device\STM32L476VGTx\STCubeGenerated\Src\bsp_timer.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

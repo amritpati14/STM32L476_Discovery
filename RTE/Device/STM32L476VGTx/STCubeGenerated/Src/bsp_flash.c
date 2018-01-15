@@ -23,7 +23,7 @@ static uint8_t Flash_QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_
   * @brief  Initializes the QSPI interface.
   * @retval QSPI memory status
   */
-uint8_t BSP_Flash_QSPI_Init(void)
+uint8_t BSP_Flash_Init(void)
 {
 	QSPIHandle.Instance = QUADSPI;
 
@@ -40,7 +40,7 @@ uint8_t BSP_Flash_QSPI_Init(void)
 	QSPIHandle.Init.ClockPrescaler     = 1; /* QSPI clock = 80MHz / (ClockPrescaler+1) = 40MHz */
 	QSPIHandle.Init.FifoThreshold      = 4;
 	QSPIHandle.Init.SampleShifting     = QSPI_SAMPLE_SHIFTING_NONE;
-	QSPIHandle.Init.FlashSize          = POSITION_VAL(N25Q128A_FLASH_SIZE) - 1;
+	QSPIHandle.Init.FlashSize          = POSITION_VAL(N25Q128A_FLASH_SIZE) - 1;    //flash size
 	QSPIHandle.Init.ChipSelectHighTime = QSPI_CS_HIGH_TIME_1_CYCLE;
 	QSPIHandle.Init.ClockMode          = QSPI_CLOCK_MODE_0;
 
@@ -78,13 +78,13 @@ uint8_t Flash_QSPI_Read(uint8_t *pData, uint32_t ReadAddr, uint32_t Size)
 
 	/* Initialize the read command */
 	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-	sCommand.Instruction       = QUAD_INOUT_FAST_READ_CMD;
+	sCommand.Instruction       = QUAD_INOUT_FAST_READ_CMD;           //Instruction
 	sCommand.AddressMode       = QSPI_ADDRESS_4_LINES;
 	sCommand.AddressSize       = QSPI_ADDRESS_24_BITS;
 	sCommand.Address           = ReadAddr;
 	sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
 	sCommand.DataMode          = QSPI_DATA_4_LINES;
-	sCommand.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD;
+	sCommand.DummyCycles       = N25Q128A_DUMMY_CYCLES_READ_QUAD;    //Dummy Cycles
 	sCommand.NbData            = Size;
 	sCommand.DdrMode           = QSPI_DDR_MODE_DISABLE;
 	sCommand.DdrHoldHalfCycle  = QSPI_DDR_HHC_ANALOG_DELAY;
@@ -119,7 +119,7 @@ uint8_t Flash_QSPI_Write(uint8_t *pData, uint32_t WriteAddr, uint32_t Size)
 	uint32_t end_addr, current_size, current_addr;
 
 	/* Calculation of the size between the write address and the end of the page */
-	current_size = N25Q128A_PAGE_SIZE - (WriteAddr % N25Q128A_PAGE_SIZE);
+	current_size = N25Q128A_PAGE_SIZE - (WriteAddr % N25Q128A_PAGE_SIZE);    //page_size
 
 	/* Check if the size of the data is less than the remaining place in the page */
 	if (current_size > Size)
@@ -133,7 +133,7 @@ uint8_t Flash_QSPI_Write(uint8_t *pData, uint32_t WriteAddr, uint32_t Size)
 
 	/* Initialize the program command */
 	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-	sCommand.Instruction       = EXT_QUAD_IN_FAST_PROG_CMD;
+	sCommand.Instruction       = EXT_QUAD_IN_FAST_PROG_CMD;    //Instruction
 	sCommand.AddressMode       = QSPI_ADDRESS_4_LINES;
 	sCommand.AddressSize       = QSPI_ADDRESS_24_BITS;
 	sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
@@ -176,7 +176,7 @@ uint8_t Flash_QSPI_Write(uint8_t *pData, uint32_t WriteAddr, uint32_t Size)
 		/* Update the address and size variables for next page programming */
 		current_addr += current_size;
 		pData += current_size;
-		current_size = ((current_addr + N25Q128A_PAGE_SIZE) > end_addr) ? (end_addr - current_addr) : N25Q128A_PAGE_SIZE;
+		current_size = ((current_addr + N25Q128A_PAGE_SIZE) > end_addr) ? (end_addr - current_addr) : N25Q128A_PAGE_SIZE;    //page_size
 	}while (current_addr < end_addr);
 
 	return QSPI_OK;
@@ -195,7 +195,7 @@ uint8_t Flash_QSPI_Erase_Block(uint32_t BlockAddress)
 
 	/* Initialize the erase command */
 	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-	sCommand.Instruction       = SUBSECTOR_ERASE_CMD;
+	sCommand.Instruction       = SUBSECTOR_ERASE_CMD;    //Instruction
 	sCommand.AddressMode       = QSPI_ADDRESS_1_LINE;
 	sCommand.AddressSize       = QSPI_ADDRESS_24_BITS;
 	sCommand.Address           = BlockAddress;
@@ -219,7 +219,7 @@ uint8_t Flash_QSPI_Erase_Block(uint32_t BlockAddress)
 	}
 
 	/* Configure automatic polling mode to wait for end of erase */
-	if (Flash_QSPI_AutoPollingMemReady(&QSPIHandle, N25Q128A_SUBSECTOR_ERASE_MAX_TIME) != QSPI_OK)
+	if (Flash_QSPI_AutoPollingMemReady(&QSPIHandle, N25Q128A_SUBSECTOR_ERASE_MAX_TIME) != QSPI_OK)    //subsector erase max time
 	{
 		return QSPI_ERROR;
 	}
@@ -614,7 +614,7 @@ static uint8_t Flash_QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_
 
 	/* Configure automatic polling mode to wait for memory ready */
 	sCommand.InstructionMode   = QSPI_INSTRUCTION_1_LINE;
-	sCommand.Instruction       = READ_STATUS_REG_CMD;
+	sCommand.Instruction       = READ_STATUS_REG_CMD;    //Instruction
 	sCommand.AddressMode       = QSPI_ADDRESS_NONE;
 	sCommand.AlternateByteMode = QSPI_ALTERNATE_BYTES_NONE;
 	sCommand.DataMode          = QSPI_DATA_1_LINE;
@@ -624,7 +624,7 @@ static uint8_t Flash_QSPI_AutoPollingMemReady(QSPI_HandleTypeDef *hqspi, uint32_
 	sCommand.SIOOMode          = QSPI_SIOO_INST_EVERY_CMD;
 
 	sConfig.Match           = 0;
-	sConfig.Mask            = N25Q128A_SR_WIP;
+	sConfig.Mask            = N25Q128A_SR_WIP;    //
 	sConfig.MatchMode       = QSPI_MATCH_MODE_AND;
 	sConfig.StatusBytesSize = 1;
 	sConfig.Interval        = 0x10;

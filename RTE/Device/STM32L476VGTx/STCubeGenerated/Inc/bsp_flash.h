@@ -25,7 +25,7 @@
   */  
 #define N25Q128A_FLASH_SIZE                  0x1000000 /* 128 MBits => 16MBytes */
 #define N25Q128A_SECTOR_SIZE                 0x10000   /* 256 sectors of 64KBytes */
-#define N25Q128A_SUBSECTOR_SIZE              0x1000    /* 4096 subsectors of 4kBytes */
+#define N25Q128A_SUBSECTOR_SIZE              0x1000    /* 4096 subsectors of 4KBytes */
 #define N25Q128A_PAGE_SIZE                   0x100     /* 65536 pages of 256 bytes */
 
 #define N25Q128A_DUMMY_CYCLES_READ           8
@@ -162,7 +162,7 @@ typedef struct
 /*************************************FUNCTION***********************************/	
 
 	 
-uint8_t BSP_Flash_QSPI_Init(void);
+uint8_t BSP_Flash_Init(void);
 uint8_t Flash_QSPI_Read(uint8_t *pData, uint32_t ReadAddr, uint32_t Size);
 uint8_t Flash_QSPI_Write(uint8_t *pData, uint32_t WriteAddr, uint32_t Size);
 

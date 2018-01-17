@@ -53,7 +53,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 
 
-
+HAL_StatusTypeDef TIM_IC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t *pData, uint16_t Length);
 
 
 #ifdef __cplusplus

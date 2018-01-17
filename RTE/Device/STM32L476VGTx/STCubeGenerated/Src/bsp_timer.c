@@ -81,8 +81,8 @@ void BSP_TIM3_IC_Init(void)
 		Error_Handler();
 	}	
 	
-	HAL_TIM_IC_Start_DMA(&TIM3_Handler,TIM_CHANNEL_1,ProbeData,Probe_Data_Size); 
-			
+	TIM_IC_Start_DMA(&TIM3_Handler,TIM_CHANNEL_1,ProbeData,Probe_Data_Size); 		//Probe_Data_Size	
+	
 } 
 
 void HAL_TIM_IC_MspInit(TIM_HandleTypeDef *htim) 
@@ -93,6 +93,7 @@ void HAL_TIM_IC_MspInit(TIM_HandleTypeDef *htim)
 		
 		__HAL_RCC_TIM3_CLK_ENABLE();  	
 		__HAL_RCC_GPIOC_CLK_ENABLE();    
+		__HAL_RCC_GPIOD_CLK_ENABLE();  		
 		  
 		GPIO_Initure.Pin       = GPIO_PIN_6;             
 		GPIO_Initure.Mode      = GPIO_MODE_AF_PP;     
@@ -103,66 +104,160 @@ void HAL_TIM_IC_MspInit(TIM_HandleTypeDef *htim)
 		HAL_GPIO_Init(GPIOC,&GPIO_Initure); 
 		
 		
-//		/* Enable DMA clock */
-//		__HAL_RCC_DMA1_CLK_ENABLE();	
-//		
-//		/* Configure the DMA handler for Transmission process */
-//		DMA_TIM_IC.Instance                 = DMA1_Channel6;
+		GPIO_Initure.Pin       = GPIO_PIN_All;             
+		GPIO_Initure.Mode      = GPIO_MODE_INPUT;     
+		GPIO_Initure.Pull      = GPIO_PULLDOWN;         	
 
-//		DMA_TIM_IC.Init.Request             = DMA_REQUEST_5;	
-//		DMA_TIM_IC.Init.Direction           = DMA_PERIPH_TO_MEMORY;
-//		DMA_TIM_IC.Init.PeriphInc           = DMA_PINC_DISABLE;
-//		DMA_TIM_IC.Init.MemInc              = DMA_MINC_ENABLE;
-//		DMA_TIM_IC.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-//		DMA_TIM_IC.Init.MemDataAlignment    = DMA_MDATAALIGN_HALFWORD;
-//		DMA_TIM_IC.Init.Mode                = DMA_CIRCULAR;
-//		DMA_TIM_IC.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
-
-//		HAL_DMA_Init(&DMA_TIM_IC);
-
-//		/* Link hdma_tim to hdma[TIM_DMA_ID_CC1] (channel1) */
-//		__HAL_LINKDMA(htim, hdma[TIM_DMA_ID_CC1], DMA_TIM_IC);
-
-////		/* Initialize TIMx DMA handle */
-////		HAL_DMA_Init(htim->hdma[TIM_DMA_ID_CC1]);
-
-
-
+		HAL_GPIO_Init(GPIOE,&GPIO_Initure); 		
+		
+		
 		/* Enable DMA clock */
 		__HAL_RCC_DMA1_CLK_ENABLE();	
 		
 		/* Configure the DMA handler for Transmission process */
 		DMA_TIM_IC.Instance                 = DMA1_Channel6;
-	
-		DMA_TIM_IC.Init.Direction           = DMA_MEMORY_TO_MEMORY;
+
+		DMA_TIM_IC.Init.Request             = DMA_REQUEST_5;	
+		DMA_TIM_IC.Init.Direction           = DMA_PERIPH_TO_MEMORY;
 		DMA_TIM_IC.Init.PeriphInc           = DMA_PINC_DISABLE;
 		DMA_TIM_IC.Init.MemInc              = DMA_MINC_ENABLE;
-		DMA_TIM_IC.Init.PeriphDataAlignment = DMA_PDATAALIGN_HALFWORD;
-		DMA_TIM_IC.Init.MemDataAlignment    = DMA_MDATAALIGN_HALFWORD;
-		DMA_TIM_IC.Init.Mode                = DMA_NORMAL;
+		DMA_TIM_IC.Init.PeriphDataAlignment = DMA_PDATAALIGN_WORD;
+		DMA_TIM_IC.Init.MemDataAlignment    = DMA_MDATAALIGN_WORD;
+//		DMA_TIM_IC.Init.Mode                = DMA_NORMAL;
+		DMA_TIM_IC.Init.Mode                = DMA_CIRCULAR;		
 		DMA_TIM_IC.Init.Priority            = DMA_PRIORITY_VERY_HIGH;
 
 		HAL_DMA_Init(&DMA_TIM_IC);
 
-		
+		/* Link hdma_tim to hdma[TIM_DMA_ID_CC1] (channel1) */
+		__HAL_LINKDMA(htim, hdma[TIM_DMA_ID_CC1], DMA_TIM_IC);
+
+		/* Initialize TIMx DMA handle */
+		HAL_DMA_Init(htim->hdma[TIM_DMA_ID_CC1]);	
 		
 		/* Enable NVIC */
 		HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 0, 0);
 		HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);		
 		
-		HAL_NVIC_SetPriority(TIM3_IRQn,0,0);     
-		HAL_NVIC_EnableIRQ(TIM3_IRQn);  		
+//		HAL_NVIC_SetPriority(TIM3_IRQn,0,0);     
+//		HAL_NVIC_EnableIRQ(TIM3_IRQn);  		
 	}
 	 	
 }
+
+
+HAL_StatusTypeDef TIM_IC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t *pData, uint16_t Length)
+{
+  /* Check the parameters */
+  assert_param(IS_TIM_CCX_INSTANCE(htim->Instance, Channel));
+  assert_param(IS_TIM_DMA_CC_INSTANCE(htim->Instance));
+
+  if((htim->State == HAL_TIM_STATE_BUSY))
+  {
+     return HAL_BUSY;
+  }
+  else if((htim->State == HAL_TIM_STATE_READY))
+  {
+    if((pData == 0 ) && (Length > 0))
+    {
+      return HAL_ERROR;
+    }
+    else
+    {
+      htim->State = HAL_TIM_STATE_BUSY;
+    }
+  }
+
+  switch (Channel)
+  {
+    case TIM_CHANNEL_1:
+    {
+      /* Set the DMA Period elapsed callback */
+      htim->hdma[TIM_DMA_ID_CC1]->XferCpltCallback = TIM_DMACaptureCplt;
+
+      /* Set the DMA error callback */
+      htim->hdma[TIM_DMA_ID_CC1]->XferErrorCallback = TIM_DMAError ;
+
+      /* Enable the DMA channel */
+      HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC1], (uint32_t)&GPIOE->IDR, (uint32_t)pData, Length);
+
+      /* Enable the TIM Capture/Compare 1 DMA request */
+      __HAL_TIM_ENABLE_DMA(htim, TIM_DMA_CC1);
+    }
+    break;
+
+    case TIM_CHANNEL_2:
+    {
+      /* Set the DMA Period elapsed callback */
+      htim->hdma[TIM_DMA_ID_CC2]->XferCpltCallback = TIM_DMACaptureCplt;
+
+      /* Set the DMA error callback */
+      htim->hdma[TIM_DMA_ID_CC2]->XferErrorCallback = TIM_DMAError ;
+
+      /* Enable the DMA channel */
+      HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC2], (uint32_t)&htim->Instance->CCR2, (uint32_t)pData, Length);
+
+      /* Enable the TIM Capture/Compare 2  DMA request */
+      __HAL_TIM_ENABLE_DMA(htim, TIM_DMA_CC2);
+    }
+    break;
+
+    case TIM_CHANNEL_3:
+    {
+      /* Set the DMA Period elapsed callback */
+      htim->hdma[TIM_DMA_ID_CC3]->XferCpltCallback = TIM_DMACaptureCplt;
+
+      /* Set the DMA error callback */
+      htim->hdma[TIM_DMA_ID_CC3]->XferErrorCallback = TIM_DMAError ;
+
+      /* Enable the DMA channel */
+      HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC3], (uint32_t)&htim->Instance->CCR3, (uint32_t)pData, Length);
+
+      /* Enable the TIM Capture/Compare 3  DMA request */
+      __HAL_TIM_ENABLE_DMA(htim, TIM_DMA_CC3);
+    }
+    break;
+
+    case TIM_CHANNEL_4:
+    {
+      /* Set the DMA Period elapsed callback */
+      htim->hdma[TIM_DMA_ID_CC4]->XferCpltCallback = TIM_DMACaptureCplt;
+
+      /* Set the DMA error callback */
+      htim->hdma[TIM_DMA_ID_CC4]->XferErrorCallback = TIM_DMAError ;
+
+      /* Enable the DMA channel */
+      HAL_DMA_Start_IT(htim->hdma[TIM_DMA_ID_CC4], (uint32_t)&htim->Instance->CCR4, (uint32_t)pData, Length);
+
+      /* Enable the TIM Capture/Compare 4  DMA request */
+      __HAL_TIM_ENABLE_DMA(htim, TIM_DMA_CC4);
+    }
+    break;
+
+    default:
+    break;
+  }
+
+  /* Enable the Input Capture channel */
+  TIM_CCxChannelCmd(htim->Instance, Channel, TIM_CCx_ENABLE);
+
+  /* Enable the Peripheral */
+  __HAL_TIM_ENABLE(htim);
+
+  /* Return function status */
+  return HAL_OK;
+}
+
+
+
 
 void BSP_TIM4_PWM_Init(void)
 {  	
 	TIM4_Handler.Instance               = TIM4;  
 	
-	TIM4_Handler.Init.Prescaler         = 79;        
+	TIM4_Handler.Init.Prescaler         = (800-1);        
 	TIM4_Handler.Init.CounterMode       = TIM_COUNTERMODE_UP;
-	TIM4_Handler.Init.Period            = 1000;         
+	TIM4_Handler.Init.Period            = (10000-1);        
 	TIM4_Handler.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1; 			
 	TIM4_Handler.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	
@@ -176,7 +271,7 @@ void BSP_TIM4_PWM_Init(void)
 	TIM4_sConfig.OCMode = TIM_OCMODE_PWM1;
 	TIM4_sConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
 	TIM4_sConfig.OCFastMode = TIM_OCFAST_DISABLE;
-	TIM4_sConfig.Pulse = 500;
+	TIM4_sConfig.Pulse = 5000;
 	
 	if(HAL_TIM_PWM_ConfigChannel(&TIM4_Handler,&TIM4_sConfig,TIM_CHANNEL_4) != HAL_OK)
 	{
@@ -192,9 +287,9 @@ void BSP_TIM5_PWM_Init(void)
 {  	
 	TIM5_Handler.Instance               = TIM5;  
 	
-	TIM5_Handler.Init.Prescaler         = 79;        
+	TIM5_Handler.Init.Prescaler         = (800-1);        
 	TIM5_Handler.Init.CounterMode       = TIM_COUNTERMODE_UP;
-	TIM5_Handler.Init.Period            = 1000;         
+	TIM5_Handler.Init.Period            = (10000-1);         
 	TIM5_Handler.Init.ClockDivision     = TIM_CLOCKDIVISION_DIV1; 			
 	TIM5_Handler.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	
@@ -208,7 +303,7 @@ void BSP_TIM5_PWM_Init(void)
 	TIM5_sConfig.OCMode = TIM_OCMODE_PWM1;
 	TIM5_sConfig.OCPolarity = TIM_OCPOLARITY_HIGH;
 	TIM5_sConfig.OCFastMode = TIM_OCFAST_DISABLE;
-	TIM5_sConfig.Pulse = 500;
+	TIM5_sConfig.Pulse = 5000;
 	
 	if(HAL_TIM_PWM_ConfigChannel(&TIM5_Handler,&TIM5_sConfig,TIM_CHANNEL_2) != HAL_OK)
 	{
@@ -264,7 +359,8 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim)
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
 
-	timer_conter++;
+//	timer_conter ++;
+	timer_conter = 0x01;	
 	
 }
 

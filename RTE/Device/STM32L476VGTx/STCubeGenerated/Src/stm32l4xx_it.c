@@ -189,13 +189,45 @@ void SysTick_Handler(void)
   * @Note     
   *             
   */
-void USART1_IRQHandler(void)
+void USARTx_IRQHandler(void)
 {	
 //	unsigned char num=0;    
 		
 	HAL_UART_IRQHandler(&T_UartHandle);		
 	
 }
+
+
+
+/**
+  * @brief  This function handles DMA interrupt request.  
+  * @param  None
+  * @retval None
+  * @Note     
+  *             
+  */
+void USARTx_DMA_RX_IRQHandler(void)
+{
+	
+	HAL_DMA_IRQHandler(T_UartHandle.hdmarx);
+	
+}
+
+/**
+  * @brief  This function handles DMA interrupt request.
+  * @param  None
+  * @retval None
+  * @Note     
+  *             
+  */
+void USARTx_DMA_TX_IRQHandler(void)
+{
+	
+	HAL_DMA_IRQHandler(T_UartHandle.hdmatx);
+	
+}
+
+
 
 
 

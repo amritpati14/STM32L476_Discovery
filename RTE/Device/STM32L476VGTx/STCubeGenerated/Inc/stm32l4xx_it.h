@@ -16,6 +16,8 @@
 	 
 #include "stm32l4xx_hal.h"
 
+#include "bsp_uart.h"
+
 /*************************************FUNCTION***********************************/	
 	
 extern TIM_HandleTypeDef TIM3_Handler;
@@ -35,7 +37,13 @@ void PendSV_Handler(void);
 void SysTick_Handler(void);
 	 
 
-void USART1_IRQHandler(void);
+void USARTx_IRQHandler(void);
+void USARTx_DMA_RX_IRQHandler(void);
+void USARTx_DMA_TX_IRQHandler(void);
+
+
+
+
 void TIM3_IRQHandler(void);
 
 void DMA1_Channel6_IRQHandler(void);

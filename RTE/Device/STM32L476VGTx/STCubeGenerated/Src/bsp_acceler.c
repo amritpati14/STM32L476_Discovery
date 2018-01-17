@@ -201,20 +201,6 @@ void LSM303C_ACCELERO_ReadXYZ(int16_t* pData)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 uint8_t LSM303C_MAGNETIC_ReadID(void)
 {
 	uint8_t tmp = 0x00;

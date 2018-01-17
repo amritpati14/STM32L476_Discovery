@@ -24,21 +24,19 @@
 	 
 	 
 /**************************************MACROS************************************/	 
-#define Timer_Prescaler	                     (5000 - 1)	 
+#define Timer_Prescaler	                     (2000 - 1)	 
 	 
-#define Timer_Period	                     (800-1)	        	 
+#define Timer_Period	                     (80-1)	        	 
 
-#define Probe_Data_Size                       0x010	 
+#define Probe_Data_Size                       40000	 
 /*************************************FUNCTION***********************************/	
 extern uint32_t timer_conter;
 
-extern uint32_t ProbeData[Probe_Data_Size];
+extern uint16_t ProbeData[Probe_Data_Size];
 
 extern void Error_Handler (void);
 
-
-
-
+void DMA_XferHalfCpltCallback(DMA_HandleTypeDef * hdma);
 	 
 void BSP_TIM3_IC_Init(void);
 	
@@ -53,7 +51,7 @@ void HAL_TIM_PWM_MspInit(TIM_HandleTypeDef *htim);
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim);
 
 
-HAL_StatusTypeDef TIM_IC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint32_t *pData, uint16_t Length);
+HAL_StatusTypeDef TIM_IC_Start_DMA(TIM_HandleTypeDef *htim, uint32_t Channel, uint16_t *pData, uint16_t Length);
 
 
 #ifdef __cplusplus

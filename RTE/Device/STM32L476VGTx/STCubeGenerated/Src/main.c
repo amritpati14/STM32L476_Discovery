@@ -21,7 +21,8 @@ uint8_t Flash_Data[4028];
 
 uint32_t timer_conter = 0x00;
 
-uint32_t ProbeData[Probe_Data_Size] ={0x00};
+uint16_t ProbeData[Probe_Data_Size] ={0x00};
+
 
 int main(void)
 {
@@ -52,7 +53,7 @@ int main(void)
 	/* TIM5_PWM initialization */	
 	BSP_TIM5_PWM_Init();
 				
-	printf("stm32 is start!\n");
+//	printf("stm32 is start!\n");
 	
 //	GYRO_ID = L3GD20_ReadID();
 //	printf("GYRO_ID is 0x%x\n",GYRO_ID);           /* 0xD4 */
@@ -83,18 +84,32 @@ int main(void)
 //		/* Insert delay 1000 ms */
 //		HAL_Delay(1000);	
 		
-		if(timer_conter == 0x01)
+		
+		if(timer_conter == 0x01 | timer_conter == 0x02)
 		{
-			
-			timer_conter = 0x00;
-			
-			for(uint8_t i=0;i<Probe_Data_Size;i++)
+			if( timer_conter == 0x01 )
 			{
-				printf("ProbeData[%d] is 0x%x\n",i,ProbeData[i]);				
 			
-			}	
+				timer_conter = 0x00;
+				
+				for(uint32_t i=0;i<Probe_Data_Size/2;i++)
+				{				
+					printf("0x%x\n",ProbeData[i]);				
+				}				
 			
-//			printf("ProbeData[0] is 0x%x\n",ProbeData[0]);
+			}
+
+			if( timer_conter == 0x02 )
+			{
+			
+				timer_conter = 0x00;
+				
+				for(uint32_t i=Probe_Data_Size/2;i<Probe_Data_Size;i++)
+				{				
+					printf("0x%x\n",ProbeData[i]);				
+				}				
+			
+			}			
 			
 		}
 	

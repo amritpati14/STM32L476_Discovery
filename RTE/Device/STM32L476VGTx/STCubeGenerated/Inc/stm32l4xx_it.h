@@ -25,6 +25,10 @@ extern TIM_HandleTypeDef TIM3_Handler;
 extern UART_HandleTypeDef T_UartHandle;	 
 
 extern DMA_HandleTypeDef DMA_TIM_IC;	 
+	 
+extern DMA_HandleTypeDef hDfsdmDma;
+	 
+extern SAI_HandleTypeDef SaiHandle;	 
 
 void NMI_Handler(void);
 void HardFault_Handler(void);
@@ -42,7 +46,8 @@ void USARTx_DMA_RX_IRQHandler(void);
 void USARTx_DMA_TX_IRQHandler(void);
 
 
-
+void DMA1_Channel4_IRQHandler(void);
+void DMA2_Channel1_IRQHandler(void);
 
 void TIM3_IRQHandler(void);
 

@@ -104,8 +104,8 @@
 #define HAL_QSPI_MODULE_ENABLED 
 #define HAL_SPI_MODULE_ENABLED 
 #define HAL_TIM_MODULE_ENABLED
-
-
+#define HAL_DFSDM_MODULE_ENABLED 
+#define HAL_SAI_MODULE_ENABLED
 
 /* ########################## Oscillator Values adaptation ####################*/
 /**

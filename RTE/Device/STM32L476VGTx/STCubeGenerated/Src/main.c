@@ -15,13 +15,24 @@ uint8_t aTxBuffer[BUFFER_SIZE] = "Healson uart transmit data test!";
 /* Buffer used for reception */
 uint8_t aRxBuffer[BUFFER_SIZE] = {0x00};
 
-uint8_t GYRO_ID,ACCELER_ID,MAGNETIC_ID;
+uint8_t GYRO_ID,ACCELER_ID,MAGNETIC_ID,AUDIO_ID;
 
 uint8_t Flash_Data[4028];
 
 uint32_t timer_conter = 0x00;
 
 uint16_t ProbeData[Probe_Data_Size] ={0x00};
+
+
+int32_t                     RecBuff[2048];
+int16_t                     PlayBuff[4096];
+uint8_t                     DmaRecHalfBuffCplt  = 0;
+uint8_t                     DmaRecBuffCplt      = 0;
+uint32_t                    PlaybackStarted         = 0;
+
+
+#define SaturaLH(N, L, H) (((N)<(L))?(L):(((N)>(H))?(H):(N)))
+
 
 
 int main(void)
@@ -46,14 +57,19 @@ int main(void)
 //	
 //	/* ACCELER initialization */		
 //	BSP_ACCELER_Init();
-	
-	/* TIM3_IC initialization */	
-	BSP_TIM3_IC_Init();
 
-	/* TIM5_PWM initialization */	
-	BSP_TIM5_PWM_Init();
+	/* AUDIO initialization */
+//	CS43L22_I2C_Init();
+	DFSDM_Init();
+	Playback_Init();
+	
+//	/* TIM3_IC initialization */	
+//	BSP_TIM3_IC_Init();
+
+//	/* TIM5_PWM initialization */	
+//	BSP_TIM5_PWM_Init();
 				
-//	printf("stm32 is start!\n");
+	printf("stm32 is start!\n");
 	
 //	GYRO_ID = L3GD20_ReadID();
 //	printf("GYRO_ID is 0x%x\n",GYRO_ID);           /* 0xD4 */
@@ -67,13 +83,25 @@ int main(void)
 //	printf("MAGNETIC_ID is 0x%x\n",MAGNETIC_ID);	/* 0x3D */		
 //	
 	
+//	AUDIO_ID = AUDIO_ReadID(AUDIO_I2C_ADDRESS);
+//	printf("AUDIO_ID is 0x%x\n",AUDIO_ID);	        /* 0xE3 */		
+		
+	
 //	if(HAL_UART_Transmit_DMA(&T_UartHandle, aTxBuffer, BUFFER_SIZE)!= HAL_OK)
 //	{
 //		
 //		Error_Handler();
 //	}	
 
-	
+
+	/* Start DFSDM conversions */
+	if(HAL_DFSDM_FilterRegularStart_DMA(&DfsdmFilterHandle, RecBuff, 2048)!= HAL_OK)
+	{
+		
+		Error_Handler();
+		
+	}
+  
 	while(1)
 	{			
 //		LED_GREEN_Toggle() ;
@@ -85,33 +113,43 @@ int main(void)
 //		HAL_Delay(1000);	
 		
 		
-		if(timer_conter == 0x01 | timer_conter == 0x02)
+	if(DmaRecHalfBuffCplt == 1)
+	{
+		/* Store values on Play buff */
+		for(uint32_t i = 0; i < 1024; i++)
 		{
-			if( timer_conter == 0x01 )
-			{
-			
-				timer_conter = 0x00;
-				
-				for(uint32_t i=0;i<Probe_Data_Size/2;i++)
-				{				
-					printf("0x%x\n",ProbeData[i]);				
-				}				
-			
-			}
-
-			if( timer_conter == 0x02 )
-			{
-			
-				timer_conter = 0x00;
-				
-				for(uint32_t i=Probe_Data_Size/2;i<Probe_Data_Size;i++)
-				{				
-					printf("0x%x\n",ProbeData[i]);				
-				}				
-			
-			}			
-			
+			PlayBuff[2*i]     = SaturaLH((RecBuff[i] >> 8), -32768, 32767);
+			PlayBuff[(2*i)+1] = PlayBuff[2*i];
 		}
+		
+		if(PlaybackStarted == 0)
+		{
+			if(CS43L22_Play(AUDIO_I2C_ADDRESS, (uint16_t *) &PlayBuff[0], 4096)!= 0)
+			{
+				Error_Handler();
+			}
+			
+			if(HAL_SAI_Transmit_DMA(&SaiHandle, (uint8_t *) &PlayBuff[0], 4096)!= HAL_OK)
+			{
+				Error_Handler();
+			}
+			PlaybackStarted = 1;
+		}      
+		DmaRecHalfBuffCplt  = 0;
+	}
+	if(DmaRecBuffCplt == 1)
+	{
+		/* Store values on Play buff */
+		for(uint32_t i = 1024; i < 2048; i++)
+		{
+			PlayBuff[2*i]     = SaturaLH((RecBuff[i] >> 8), -32768, 32767);
+			PlayBuff[(2*i)+1] = PlayBuff[2*i];
+		}
+		DmaRecBuffCplt  = 0;
+	}		
+		
+		
+	
 	
 	}
 }

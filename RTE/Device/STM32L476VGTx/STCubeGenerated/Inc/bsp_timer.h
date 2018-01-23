@@ -28,7 +28,7 @@
 	 
 #define Timer_Period	                     (80-1)	        	 
 
-#define Probe_Data_Size                       40000	 
+#define Probe_Data_Size                       4000	 
 /*************************************FUNCTION***********************************/	
 extern uint32_t timer_conter;
 

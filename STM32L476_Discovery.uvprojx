@@ -409,6 +409,11 @@
               <FileType>1</FileType>
               <FilePath>.\RTE\Device\STM32L476VGTx\STCubeGenerated\Src\bsp_timer.c</FilePath>
             </File>
+            <File>
+              <FileName>bsp_cs43l22.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\RTE\Device\STM32L476VGTx\STCubeGenerated\Src\bsp_cs43l22.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>
@@ -488,6 +493,12 @@
           <targetInfo name="Target 1"/>
         </targetInfos>
       </component>
+      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DFSDM" Cvendor="Keil" Cversion="1.9.0" condition="STM32L451_452_462_471_475_476_485_486_496_4A6_4R5_4R7_4R9_4S5_4S7_4S9 HAL DMA">
+        <package name="STM32L4xx_DFP" schemaVersion="1.2" url="http://www.keil.com/pack" vendor="Keil" version="2.0.0"/>
+        <targetInfos>
+          <targetInfo name="Target 1"/>
+        </targetInfos>
+      </component>
       <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="DMA" Cvendor="Keil" Cversion="1.9.0" condition="STM32L4 HAL">
         <package name="STM32L4xx_DFP" schemaVersion="1.2" url="http://www.keil.com/pack" vendor="Keil" version="2.0.0"/>
         <targetInfos>
@@ -519,6 +530,12 @@
         </targetInfos>
       </component>
       <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="RCC" Cvendor="Keil" Cversion="1.9.0" condition="STM32L4 HAL GPIO">
+        <package name="STM32L4xx_DFP" schemaVersion="1.2" url="http://www.keil.com/pack" vendor="Keil" version="2.0.0"/>
+        <targetInfos>
+          <targetInfo name="Target 1"/>
+        </targetInfos>
+      </component>
+      <component Cclass="Device" Cgroup="STM32Cube HAL" Csub="SAI" Cvendor="Keil" Cversion="1.9.0" condition="STM32L4 HAL DMA">
         <package name="STM32L4xx_DFP" schemaVersion="1.2" url="http://www.keil.com/pack" vendor="Keil" version="2.0.0"/>
         <targetInfos>
           <targetInfo name="Target 1"/>

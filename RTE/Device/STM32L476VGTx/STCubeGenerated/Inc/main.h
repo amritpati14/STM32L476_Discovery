@@ -37,6 +37,8 @@
 //#include "bsp_oled.h"
 //#include "bsp_fir.h"
 
+#include "bsp_cs43l22.h"
+
 
 /**************************************MACRO*************************************/
 
@@ -50,6 +52,17 @@ extern TIM_HandleTypeDef TIM3_Handler;
 extern UART_HandleTypeDef T_UartHandle;
 
 extern DMA_HandleTypeDef DMA_TIM_IC;	
+
+
+extern I2C_HandleTypeDef            I2C1_Handle;
+
+extern DMA_HandleTypeDef            hDfsdmDma;
+extern DMA_HandleTypeDef            hSaiDma;
+
+extern DFSDM_Channel_HandleTypeDef  DfsdmChannelHandle;
+extern DFSDM_Filter_HandleTypeDef   DfsdmFilterHandle;
+
+extern SAI_HandleTypeDef            SaiHandle;
 
 
 
